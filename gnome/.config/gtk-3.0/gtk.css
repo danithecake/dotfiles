@@ -1,0 +1,11 @@
+headerbar.titlebar {
+  min-height: 0;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}
+
+headerbar.titlebar button.titlebutton {
+  min-height: 0;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}

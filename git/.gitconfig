@@ -1,0 +1,15 @@
+[user]
+	email = danithecake@gmail.com
+	name = Danil Golovachev
+[push]
+	default = current
+[core]
+	editor = nvim
+[diff]
+	tool = nvimdiff
+[merge]
+	tool = nvimdiff
+[difftool "nvimdiff"]
+	cmd = nvim -d $BASE $LOCAL
+[mergetool "nvimdiff"]
+	cmd = nvim -d $LOCAL $REMOTE $MERGED
