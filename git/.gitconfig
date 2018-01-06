@@ -13,3 +13,7 @@
 	cmd = nvim -d $BASE $LOCAL
 [mergetool "nvimdiff"]
 	cmd = nvim -d $LOCAL $REMOTE $MERGED
+[alias]
+	s = status
+	ss = status -s
+	cout = checkout

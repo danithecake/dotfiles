@@ -8,6 +8,14 @@
 PS1="(\W)\[\e[32m\]>\[\e[0m\] "
 
 #
+# Completion
+#
+lcompl=~/.config/bash-completion
+if [ -d "${lcompl}" ]; then
+  for f in $lcompl/*; do source $f; done
+fi
+
+#
 # Aliases
 #
 alias ls="ls --color=auto"

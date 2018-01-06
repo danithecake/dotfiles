@@ -8,4 +8,7 @@ if exists('g:loaded_ale_after')
   let g:ale_javascript_eslint_executable = 'eslint_d'
 
   let &stl .= '[%{ALEGetStatusLine()}]'
+
+  nmap <Leader>ep <Plug>(ale_previous_wrap)
+  nmap <Leader>en <Plug>(ale_next_wrap)
 endif
