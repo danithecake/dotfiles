@@ -1,3 +1,7 @@
+if !exists('g:colors_name')
+  finish
+endif
+
 aug vim_one_overrides
   au!
   au ColorScheme * call VimOneOverrides(g:colors_name)

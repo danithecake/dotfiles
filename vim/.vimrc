@@ -15,36 +15,32 @@ set wildignore+=*.exe,*.jpg,*.png,*.gif,*.svg
 "
 " Plugins
 "
-let g:vim_plugs = $VIMPLUGS
+let g:plugs_path = $VIMPLUGS
 filetype plugin indent on
 
-"ru! autoload/plug.vim
-let s:vim_plug = expand(g:vim_plugs.'/plug.vim')
+let s:pathogen = expand(g:plugs_path.'/vim-pathogen/autoload/pathogen.vim')
 
-if filereadable(s:vim_plug)
-  exec 'so '.s:vim_plug
-  call plug#begin(expand(g:vim_plugs))
-    " Tools
-    Plug 'Shougo/neosnippet'
-    Plug 'w0rp/ale'
-    Plug 'chrisbra/Colorizer'
-    Plug 'machakann/vim-highlightedyank'
-    " UI
-    Plug 'rakr/vim-one'
-    " Langs
-    Plug 'pangloss/vim-javascript'
-    Plug 'mxw/vim-jsx'
-    Plug 'hail2u/vim-css3-syntax'
-  call plug#end()
+if filereadable(s:pathogen)
+  exec 'source '.s:pathogen
+
+  command! -nargs=1 Plugin call pathogen#infect(expand(g:plugs_path).'/'.<args>)
+
+  " UI
+  Plugin 'vim-one'
+  " Tools
+  Plugin 'ale',
+  Plugin 'Colorizer',
+  Plugin 'neosnippet',
+  Plugin 'vim-highlightedyank',
+  " Langs
+  Plugin 'vim-javascript'
+
 endif
-
-unlet s:vim_plug
+unlet s:pathogen
 
 "
 " Editor
 "
-" Spaces instead of tabs by default
-set expandtab
 " Insert 2 spaces when Tab was pressed
 set softtabstop=2
 " Insert 2 spaces when was an indent operation
@@ -99,6 +95,14 @@ let &stl = '[%{toupper(mode())}]%.40F%m%r%=%k%q%h%w%y[%l:%L|%c]'
 " Wild menu
 set wildmode=full
 set wildignorecase
+" Mode depended curosr shape
+if exists('$TMUX') 
+  let &t_SI = "\<Esc>[3 q"
+  let &t_EI = "\<Esc>[0 q"
+else
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
 
 "
 " Auto commands

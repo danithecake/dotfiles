@@ -1,4 +1,4 @@
-if exists('g:loaded_ale_after')
+if exists('g:loaded_ale')
   let g:ale_lint_on_save = 0
   let g:ale_lint_on_text_changed = 'normal'
   let g:ale_lint_on_insert_leave = 1
