@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if ( echo $EDITOR | CLICOLOR=1 grep -v vim > /dev/null ); then
+  if ( command -v vim > /dev/null ); then
+    EDITOR=vim
+  elif ( command -v nvim > /dev/null ); then
+    EDITOR=nvim
+  else
+    exit 1
+  fi
+fi
+
+if [ -t 0 ]; then
+  command $EDITOR $@
+
+  exit
+fi
+
+tmp=${HOME}/pvi$$
+
+cat > $tmp
+
+trap "rm ${tmp}" EXIT
+
+command $EDITOR -c "set noswapfile" -- $tmp < /dev/tty > /dev/tty || exit
+
+cat $tmp
