@@ -11,30 +11,30 @@ endif
 set wildignore+=node_modules/*,.git/*
 set wildignore+=*.swp,*.swo
 set wildignore+=*.exe,*.jpg,*.png,*.gif,*.svg
+set title
+set mouse=a
+set path-=/usr/include
 
 "
 " Plugins
 "
 let g:plugs_path = $VIMPLUGS
 filetype plugin indent on
-
 let s:pathogen = expand(g:plugs_path.'/vim-pathogen/autoload/pathogen.vim')
+
+command! Plugin silent
 
 if filereadable(s:pathogen)
   exec 'source '.s:pathogen
 
-  command! -nargs=1 Plugin call pathogen#infect(expand(g:plugs_path).'/'.<args>)
+  command! -nargs=1 Plugin call pathogen#infect(expand(g:plugs_path.'/'.split(<args>, '/')[-1]))
 
-  " UI
-  Plugin 'vim-one'
   " Tools
-  Plugin 'ale',
-  Plugin 'Colorizer',
-  Plugin 'neosnippet',
-  Plugin 'vim-highlightedyank',
+  Plugin 'https://github.com/Shougo/neosnippet.vim'
+  Plugin 'https://github.com/machakann/vim-highlightedyank'
+  Plugin 'terma.vim'
   " Langs
-  Plugin 'vim-javascript'
-
+  Plugin 'https://github.com/pangloss/vim-javascript'
 endif
 unlet s:pathogen
 
@@ -48,15 +48,14 @@ set shiftwidth=2
 " Enable syntax highlighting
 syntax on
 " Show tabs and trailing whitespaces
-set listchars=tab:\|-,trail:~,extends:>,precedes:<
+set listchars=tab:\|-,trail:.,extends:>,precedes:<
 set list
 " Wrap settings
 set textwidth=79
-set colorcolumn=+1
 set wrapmargin=2
 set linebreak
 set breakindent
-set showbreak=>\ 
+set showbreak=>
 " Set default fold method to match indent settings
 set foldmethod=indent
 set foldlevelstart=99
@@ -67,36 +66,41 @@ set hlsearch
 set incsearch
 set ignorecase
 set smartcase
-" Enable inccommand option if exists(for interactive substitution)
-if exists('&inccommand')
-  set inccommand=nosplit
-endif
 " Enable omni completion based on syntax file by default
 set omnifunc=syntaxcomplete#Complete
 " Only insert the longest common text for completion
 set completeopt+=menuone,longest,noinsert
 set completeopt-=preview
+" Decrease completion priority for directory matches
+set suffixes+=,
 
 "
 " UI
 "
 set background=light
-" Enable One Vim theme for Vim >8 and Neovim
-if (has("termguicolors")) && $TERM =~ '256color'
+if has('termguicolors') && ($COLORTERM == 'truecolor' || $COLORTERM == '24bit')
   set termguicolors
-  silent! color one
 endif
+silent! colorscheme default
+" Clear highlight for some UI elements
+silent! call hiclear#clear()
+" Chars that will be used in various UI delimiters
+set fillchars=stl:\ ,stlnc:\ ,vert:\|,fold:-
 " Show status line by default
 set laststatus=2
 " Show sign column by default
 set signcolumn=yes
 " Status line config
-let &stl = '[%{toupper(mode())}]%.40F%m%r%=%k%q%h%w%y[%l:%L|%c]'
+set statusline=[%{toupper(mode())}]
+set statusline+=%m
+set statusline+=%r
+set statusline+=%{winnr()!=winnr('#')?'[•]':''}
+set statusline+=%f
+set statusline+=%=%k%y[%l:%L\|%c]
 " Wild menu
-set wildmode=full
 set wildignorecase
 " Mode depended curosr shape
-if exists('$TMUX') 
+if exists('$TMUX')
   let &t_SI = "\<Esc>[3 q"
   let &t_EI = "\<Esc>[0 q"
 else
@@ -107,19 +111,15 @@ endif
 "
 " Auto commands
 "
-augroup init_aucs
+augroup init
   autocmd!
   autocmd FileType gitconfig setlocal noet softtabstop& shiftwidth&
-  " Split tag macro
-  autocmd FileType html,htmldjango let @t="vitdiOp==k0"
-  " Set file types
-  autocmd BufRead,BufNewFile .tern-project setlocal ft=json
-  autocmd BufRead,BufNewFile bash-fc.* setlocal ft=bash.sh
-  autocmd BufRead,BufNewFile *.jsx setlocal ft=javascript.jsx
-  autocmd BufRead,BufNewFile *.eslintrc setlocal ft=json
+  autocmd FileType vim setlocal expandtab
   " Disable sign column for command-line window
   autocmd CmdWinEnter setlocal signcolumn=auto
-augroup end
+  " Enable spellcheck
+  autocmd FileType gitcommit setlocal spell
+augroup END
 
 "
 " Keymaps
@@ -140,13 +140,15 @@ noremap <Leader>xP "+P
 " Slightly faster access to some file/buffer related switch commands
 nnoremap <Leader>of :next<Space>
 nnoremap <Leader>ob :buffer<Space>
-nnoremap <Leader>ff :find<Space>
 " Switch relative line mubers
 nnoremap <Leader>rn :set rnu! rnu? <CR>
 " Write files with sudo access
 cnoremap w!! w !sudo tee > /dev/null %
 " Shortcut to paste recurse wildcard
 cnoremap *<C-J> **/
+" Slightly faster access to :grep commands
+cnoremap gr<C-J> sil! grep! -r 
+nmap <Leader>gw :gr<C-J><C-R><C-W>
 " Append closing chars
 let s:closing_chars = {"'": "''", "\"": "\"\"", '{': '{}'}
 for k in keys(s:closing_chars)
@@ -157,4 +159,19 @@ endfor
 " Commands
 "
 command! Scratchpad new | only | setlocal buftype=nofile noswapfile
-command! EditorConf exe 'e' expand($MYVIMRC)
+command! EditorConf exec 'drop '.expand('$HOME/.vimrc')
+command! BufsToQFList call setqflist(BufsToQuickFix(), 'r', 'Buffers') | copen
+command! -nargs=? BufsToLocList call setloclist(empty(<q-args>) ? 0 : <q-args>, BufsToQuickFix(), 'r', 'Buffers') | lopen
+
+"
+" Functions
+"
+function! BufsToQuickFix()
+  return map(
+        \   filter(range(1, bufnr('$')), 'buflisted(v:val)'),
+        \   {val -> {
+        \     'lnum': v:val,
+        \     'text': empty(bufname(v:val)) ? '[No Name]' : bufname(v:val)
+        \   }}
+        \ )
+endfunction
