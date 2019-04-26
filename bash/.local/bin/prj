@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# TODO: Verbose exit messages needed
+if [ "$#" -eq 0 ]; then
+  exit 1
+fi
+
 if [ ! -x "$(command -v tmux)" ]; then
   exit 1
 fi
@@ -12,10 +17,23 @@ else
   source "$1"
 fi
 
+TMUX_ATTACH_CMD="attach"
+
+if [ -n "$TMUX" ]; then
+  TMUX_ATTACH_CMD="switch-client"
+fi
+
+if tmux has-session -t "$PRJNAME" 2>/dev/null; then
+  tmux $TMUX_ATTACH_CMD -t "$PRJNAME"
+
+  exit
+fi
+
 if [ -z "$PRJROOT" ] || [ ! -d "$PRJROOT" ]; then
   exit 1
 fi
 
+# TODO: Should be optional
 PRJLOCAL="${PRJROOT}/.local"
 PRJLCONF="${PRJLOCAL}/config"
 PRJLDATA="${PRJLOCAL}/share"
@@ -24,9 +42,30 @@ if [ ! -d "$PRJLOCAL" ]; then
   mkdir "$PRJLOCAL"
 fi
 
-if [ ! -d "$PRJLCONF" ]; then
+if [ ! -d "$PRJLCONF" ] && [ -d "$PRJCONF" ]; then
   ln -s "$PRJCONF" "$PRJLCONF"
 fi
+
+PRJLBASHRC="${PRJLCONF}/bashrc"
+TMUX_DEFAULT_CMD="$SHELL"
+
+if [ -f "$PRJLBASHRC" ]; then
+  TMUX_DEFAULT_CMD=$TMUX_DEFAULT_CMD." --rcfile $PRJLBASHRC"
+fi
+
+tmux new -d -s "$PRJNAME" -c "$PRJROOT" &
+
+wait
+
+tmux $TMUX_ATTACH_CMD -t "$PRJNAME"
+tmux set-environment -t "$PRJNAME" PRJROOT "$PRJROOT"
+tmux set-environment -t "$PRJNAME" PRJLOCAL "$PRJLOCAL"
+tmux set-environment -t "$PRJNAME" PRJCONF "$PRJLCONF"
+tmux set-environment -t "$PRJNAME" PRJDATA "$PRJLDATA"
+tmux set-option -t "$PRJNAME" default-command $TMUX_DEFAULT_CMD
+tmux new-window -t "$PRJNAME" -c "$PRJROOT"
+tmux swap-window -s "${PRJNAME}:1" -t "${PRJNAME}:0"
+tmux kill-window -t "${PRJNAME}:1"
 
 if [ ! -d "$PRJLDATA" ]; then
   mkdir -p "${PRJLDATA}/vim/view"
@@ -36,30 +75,10 @@ if [ -d "${PRJROOT}/.git" ] && ! grep ".local/*" "${PRJROOT}/.git/info/exclude" 
   echo ".local/*" >> "${PRJROOT}/.git/info/exclude"
 fi
 
-if tmux has-session -t "$PRJNAME" 2>/dev/null; then
-  tmux $(test -n "$TMUX" && echo "switch-client" || echo "attach") -t "$PRJNAME"
-
-  exit
-fi
-
 cd "$PRJROOT"
-
-tmux new -d -s "$PRJNAME" -c "$PRJROOT" \; \
-  set-environment PRJROOT "$PRJROOT" \; \
-  set-environment PRJLOCAL "$PRJLOCAL" \; \
-  set-environment PRJCONF "$PRJLCONF" \; \
-  set-environment PRJDATA "$PRJLDATA" \; \
-  set-option default-command "${SHELL} --rcfile ${PRJLCONF}/bashrc" \; \
-  new-window -c "$PRJROOT" \; \
-  swap-window -s 1 -t 0 \; \
-  kill-window -t 1 &
-
-wait
 
 if [ "$(type -t prjpost)" = function ]; then
   prjpost
 fi
-
-tmux attach -t "$PRJNAME"
 
 exit
