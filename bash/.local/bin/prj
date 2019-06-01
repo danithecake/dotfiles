@@ -50,19 +50,16 @@ PRJLBASHRC="${PRJLCONF}/bashrc"
 TMUX_DEFAULT_CMD="$SHELL"
 
 if [ -f "$PRJLBASHRC" ]; then
-  TMUX_DEFAULT_CMD=$TMUX_DEFAULT_CMD." --rcfile $PRJLBASHRC"
+  TMUX_DEFAULT_CMD="$TMUX_DEFAULT_CMD --rcfile $PRJLBASHRC"
 fi
 
-tmux new -d -s "$PRJNAME" -c "$PRJROOT" &
+tmux new -d -s "$PRJNAME" -c "$PRJROOT"
 
-wait
-
-tmux $TMUX_ATTACH_CMD -t "$PRJNAME"
 tmux set-environment -t "$PRJNAME" PRJROOT "$PRJROOT"
 tmux set-environment -t "$PRJNAME" PRJLOCAL "$PRJLOCAL"
 tmux set-environment -t "$PRJNAME" PRJCONF "$PRJLCONF"
 tmux set-environment -t "$PRJNAME" PRJDATA "$PRJLDATA"
-tmux set-option -t "$PRJNAME" default-command $TMUX_DEFAULT_CMD
+tmux set-option -t "$PRJNAME" default-command "$TMUX_DEFAULT_CMD"
 tmux new-window -t "$PRJNAME" -c "$PRJROOT"
 tmux swap-window -s "${PRJNAME}:1" -t "${PRJNAME}:0"
 tmux kill-window -t "${PRJNAME}:1"
@@ -80,5 +77,7 @@ cd "$PRJROOT"
 if [ "$(type -t prjpost)" = function ]; then
   prjpost
 fi
+
+tmux $TMUX_ATTACH_CMD -t "$PRJNAME"
 
 exit
