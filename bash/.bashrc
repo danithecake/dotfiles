@@ -37,14 +37,6 @@ function dconf-dump {
   fi
 }
 
-function copy {
-  if command -v pbcopy >/dev/null 2>&1; then
-    pbcopy
-  elif command -v xsel >/dev/null 2>&1; then
-    xsel -ibv
-  fi
-}
-
 function randstr {
   echo $( \
     LC_ALL=C tr -dc [:alnum:] </dev/urandom | \
