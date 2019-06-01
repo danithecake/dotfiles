@@ -10,6 +10,7 @@ export PS1="\[\e[1m\][\w]\[\e[0m\]\n: "
 # Completion
 #
 [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+[ -f /opt/local/etc/bash_completion ] && . /opt/local/etc/bash_completion
 [ -f ~/.config/bash-completion ] && . ~/.config/bash-completion
 
 #
