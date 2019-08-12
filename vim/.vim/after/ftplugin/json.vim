@@ -1,1 +1,1 @@
-setlocal include=\"main\"\:\ 
+silent! compiler prettier

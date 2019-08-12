@@ -1,8 +1,8 @@
 "
 " System
 "
-" Disable audio bell
-set visualbell
+" Disable audio and visual bell
+set visualbell t_vb=
 " Disable BCE
 if $TERM =~ '256color'
   set t_ut=
@@ -14,6 +14,10 @@ set wildignore+=*.exe,*.jpg,*.png,*.gif,*.svg
 set title
 set mouse=a
 set path-=/usr/include
+" Make copy of the file and overwrite the original one
+set backupcopy=yes
+" Small time out on key codes
+set ttimeoutlen=10
 
 "
 " Plugins
@@ -32,9 +36,6 @@ if filereadable(s:pathogen)
   " Tools
   Plugin 'https://github.com/Shougo/neosnippet.vim'
   Plugin 'https://github.com/machakann/vim-highlightedyank'
-  Plugin 'terma.vim'
-  " Langs
-  Plugin 'https://github.com/pangloss/vim-javascript'
 endif
 unlet s:pathogen
 
@@ -45,8 +46,8 @@ unlet s:pathogen
 set softtabstop=2
 " Insert 2 spaces when was an indent operation
 set shiftwidth=2
-" Enable syntax highlighting
-syntax on
+" Disable syntax highlighting
+syntax off
 " Show tabs and trailing whitespaces
 set listchars=tab:\|-,trail:.,extends:>,precedes:<
 set list
@@ -73,6 +74,8 @@ set completeopt+=menuone,longest,noinsert
 set completeopt-=preview
 " Decrease completion priority for directory matches
 set suffixes+=,
+" Enable inccommand option if exists(for interactive substitution)
+silent! set inccommand=nosplit
 
 "
 " UI
@@ -81,9 +84,7 @@ set background=light
 if has('termguicolors') && ($COLORTERM == 'truecolor' || $COLORTERM == '24bit')
   set termguicolors
 endif
-silent! colorscheme default
-" Clear highlight for some UI elements
-silent! call hiclear#clear()
+silent! colorscheme crystalline
 " Chars that will be used in various UI delimiters
 set fillchars=stl:\ ,stlnc:\ ,vert:\|,fold:-
 " Show status line by default
@@ -95,13 +96,13 @@ set statusline=[%{toupper(mode())}]
 set statusline+=%m
 set statusline+=%r
 set statusline+=%{winnr()!=winnr('#')?'[•]':''}
-set statusline+=%f
+set statusline+=%{empty(@%)?'':'['}%<%f%{empty(@%)?'':']'}
 set statusline+=%=%k%y[%l:%L\|%c]
 " Wild menu
 set wildignorecase
 " Mode depended curosr shape
-if exists('$TMUX')
-  let &t_SI = "\<Esc>[3 q"
+if exists('$TMUX') || &term =~ "xterm\\|rxvt"
+  let &t_SI = "\<Esc>[5 q"
   let &t_EI = "\<Esc>[0 q"
 else
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -119,6 +120,8 @@ augroup init
   autocmd CmdWinEnter setlocal signcolumn=auto
   " Enable spellcheck
   autocmd FileType gitcommit setlocal spell
+  " Automatically start Neovim's terminal buffer in insert mode
+  silent! autocmd TermOpen * startinsert
 augroup END
 
 "
@@ -148,7 +151,9 @@ cnoremap w!! w !sudo tee > /dev/null %
 cnoremap *<C-J> **/
 " Slightly faster access to :grep commands
 cnoremap gr<C-J> sil! grep! -r 
+cnoremap lgr<C-J> sil! lgrep! -r 
 nmap <Leader>gw :gr<C-J><C-R><C-W>
+nmap <Leader>lgw :lgr<C-J><C-R><C-W>
 " Append closing chars
 let s:closing_chars = {"'": "''", "\"": "\"\"", '{': '{}'}
 for k in keys(s:closing_chars)
@@ -158,7 +163,7 @@ endfor
 "
 " Commands
 "
-command! Scratchpad new | only | setlocal buftype=nofile noswapfile
+command! Scratchpad enew | setlocal buftype=nofile noswapfile
 command! EditorConf exec 'drop '.expand('$HOME/.vimrc')
 command! BufsToQFList call setqflist(BufsToQuickFix(), 'r', 'Buffers') | copen
 command! -nargs=? BufsToLocList call setloclist(empty(<q-args>) ? 0 : <q-args>, BufsToQuickFix(), 'r', 'Buffers') | lopen

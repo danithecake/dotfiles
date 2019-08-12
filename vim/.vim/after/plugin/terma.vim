@@ -1,5 +1,5 @@
 if !exists('g:terma_loaded') || !g:terma_loaded
-  exit
+  finish
 endif
 
 function! FileFinder(...)
