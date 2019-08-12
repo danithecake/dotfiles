@@ -1,10 +1,23 @@
+#!/usr/bin/env bash
 #
 # ~/.bashrc
 #
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-export PS1="\[\e[1m\][\w]\[\e[0m\]\n: "
+function prompt-git-bname {
+  git bname 2>/dev/null | (read b && echo " [git:${b::20}$(test ${#b} -gt 20 && echo ...)]")
+}
+
+function prompt-jobs-count {
+  jobs | wc -l | bc | (read j && test "$j" -gt 0 && echo -n " " && printf "[bg:%${j}s]" | tr " " "•")
+}
+
+function prompt {
+  PS1=$(printf "\e[1m%s\e[0m\n: " "[dir:\w]$(prompt-git-bname)$(prompt-jobs-count)")
+}
+
+export PROMPT_COMMAND=prompt
 
 #
 # Completion
@@ -38,24 +51,27 @@ function dconf-dump {
 }
 
 function randstr {
-  echo $( \
-    LC_ALL=C tr -dc [:alnum:] </dev/urandom | \
-    fold -w $([ -z "$1" ] && echo 8 || echo "$1" ) | \
-    head -n 1)
+  LC_ALL=C tr -dc "[:alnum:]" </dev/urandom | \
+    fold -w "$([ -z "$1" ] && echo 8 || echo "$1" )" | \
+    head -n 1
 }
 
 function nvim {
   if command -v pvi >/dev/null; then
-    EDITOR=nvim pvi $@
+    EDITOR=nvim pvi "$@"
   else
-    command nvim $@
+    command nvim "$@"
   fi
 }
 
 function vim {
   if command -v pvi >/dev/null; then
-    EDITOR=vim pvi $@
+    EDITOR=vim pvi "$@"
   else
-    command vim $@
+    command vim "$@"
   fi
+}
+
+function term-title {
+  echo -en "\033]0;${*}\a"
 }

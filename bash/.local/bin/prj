@@ -1,83 +1,69 @@
 #!/usr/bin/env bash
 
 # TODO: Verbose exit messages needed
-if [ "$#" -eq 0 ]; then
+if [ "$#" -le 1 ]; then
   exit 1
 fi
 
-if [ ! -x "$(command -v tmux)" ]; then
-  exit 1
-fi
+roots_path=/prj/roots.sh
 
-if [ -r  "${XDG_CONFIG_HOME}/prj/${1}.sh" ]; then
-  source "${XDG_CONFIG_HOME}/prj/${1}.sh"
-elif [ -r "${HOME}/.config/prj/${1}.sh" ]; then
-  source "${HOME}/.config/prj/${1}.sh"
+if [ -r  "${XDG_CONFIG_HOME}${roots_path}" ]; then
+  source "${XDG_CONFIG_HOME}${roots_path}"
+elif [ -r "${HOME}/.config${roots_path}" ]; then
+  source "${HOME}/.config${roots_path}"
 else
-  source "$1"
+  declare -A roots=( [$2]="" )
 fi
 
-TMUX_ATTACH_CMD="attach"
+PRJ_NAME=$2
+PRJ_ROOT=${roots[$PRJ_NAME]}
+test -z "$PRJ_ROOT" && PRJ_ROOT=${3:-$(pwd)}
+PRJ_LOCAL=${PRJ_ROOT}/.local
+PRJ_CONFIG=${PRJ_LOCAL}/config
+# shellcheck disable=SC2034
+PRJ_DATA=${PRJ_LOCAL}/share
+prj_vars=("NAME" "ROOT" "LOCAL" "CONFIG" "DATA")
 
-if [ -n "$TMUX" ]; then
-  TMUX_ATTACH_CMD="switch-client"
-fi
+echo -en "\033]0;${PRJ_NAME}\a"
 
-if tmux has-session -t "$PRJNAME" 2>/dev/null; then
-  tmux $TMUX_ATTACH_CMD -t "$PRJNAME"
+if [ "$1" = "--sh" ]; then
+  for prj_var in "${prj_vars[@]}"; do
+    prj_var=PRJ_${prj_var}
+    export "$prj_var=${!prj_var}"
+  done
+
+  cd "$PRJ_ROOT"
+
+  # shellcheck disable=SC2046
+  $(which bash) $(test -f "${PRJ_CONFIG}/bashrc" && echo "--rcfile ${PRJ_CONFIG}/bashrc")
 
   exit
 fi
 
-if [ -z "$PRJROOT" ] || [ ! -d "$PRJROOT" ]; then
-  exit 1
+if [ "$1" = "--tmux" ]; then
+  test ! -x "$(command -v tmux)" && exit 1
+  attach_cmd=$(test -n "$TMUX" && echo "switch-client" || echo "attach")
+  # shellcheck disable=SC2086
+  tmux has-session -t "$PRJ_NAME" > /dev/null 2>&1 && tmux $attach_cmd -t "$PRJ_NAME" && exit
+  tmux new-session -d -c "$PRJ_ROOT" -s "$PRJ_NAME"
+
+  for prj_var in "${prj_vars[@]}"; do
+    prj_var=PRJ_${prj_var}
+    tmux set-environment -t "$PRJ_NAME" "$prj_var" "${!prj_var}"
+  done
+
+  test -f "${PRJ_CONFIG}/bashrc" && tmux set-option -t "$PRJ_NAME" \
+    default-command "$(which bash) --rcfile ${PRJ_CONFIG}/bashrc"
+
+  tmux new-window -c "$PRJ_ROOT" -t "$PRJ_NAME"
+  tmux swap-window -s "${PRJ_NAME}:1" -t "${PRJ_NAME}:0"
+  tmux kill-window -t "${PRJ_NAME}:1"
+
+  test -f "${PRJ_CONFIG}/tmux.conf" && tmux send-keys -t "$PRJ_NAME" \
+    " tmux source-file ${PRJ_CONFIG}/tmux.conf" Enter C-l
+
+  # shellcheck disable=SC2086
+  tmux $attach_cmd -t "$PRJ_NAME"
+
+  exit
 fi
-
-# TODO: Should be optional
-PRJLOCAL="${PRJROOT}/.local"
-PRJLCONF="${PRJLOCAL}/config"
-PRJLDATA="${PRJLOCAL}/share"
-
-if [ ! -d "$PRJLOCAL" ]; then
-  mkdir "$PRJLOCAL"
-fi
-
-if [ ! -d "$PRJLCONF" ] && [ -d "$PRJCONF" ]; then
-  ln -s "$PRJCONF" "$PRJLCONF"
-fi
-
-PRJLBASHRC="${PRJLCONF}/bashrc"
-TMUX_DEFAULT_CMD="$SHELL"
-
-if [ -f "$PRJLBASHRC" ]; then
-  TMUX_DEFAULT_CMD="$TMUX_DEFAULT_CMD --rcfile $PRJLBASHRC"
-fi
-
-tmux new -d -s "$PRJNAME" -c "$PRJROOT"
-
-tmux set-environment -t "$PRJNAME" PRJROOT "$PRJROOT"
-tmux set-environment -t "$PRJNAME" PRJLOCAL "$PRJLOCAL"
-tmux set-environment -t "$PRJNAME" PRJCONF "$PRJLCONF"
-tmux set-environment -t "$PRJNAME" PRJDATA "$PRJLDATA"
-tmux set-option -t "$PRJNAME" default-command "$TMUX_DEFAULT_CMD"
-tmux new-window -t "$PRJNAME" -c "$PRJROOT"
-tmux swap-window -s "${PRJNAME}:1" -t "${PRJNAME}:0"
-tmux kill-window -t "${PRJNAME}:1"
-
-if [ ! -d "$PRJLDATA" ]; then
-  mkdir -p "${PRJLDATA}/vim/view"
-fi
-
-if [ -d "${PRJROOT}/.git" ] && ! grep ".local/*" "${PRJROOT}/.git/info/exclude" 2>&1 >/dev/null; then
-  echo ".local/*" >> "${PRJROOT}/.git/info/exclude"
-fi
-
-cd "$PRJROOT"
-
-if [ "$(type -t prjpost)" = function ]; then
-  prjpost
-fi
-
-tmux $TMUX_ATTACH_CMD -t "$PRJNAME"
-
-exit
