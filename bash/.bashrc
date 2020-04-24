@@ -76,3 +76,17 @@ function tmux-new {
 
   unset sesfile
 }
+
+function tmux-attach {
+  if [ -n "$1" ]; then
+    sesname=$1
+  else
+    sesname=$(ls -t ~/.config/tsessions/ | sed 's/\.conf//' | fzy 2>/dev/null)
+  fi
+
+  test -z $sesname && exit 1
+
+  test -z $TMUX && tmux attach -t $sesname || tmux switch-client -t $sesname
+
+  unset sesname
+}
