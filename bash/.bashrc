@@ -90,3 +90,13 @@ function tmux-attach {
 
   unset sesname
 }
+
+function tmux-exp-opt {
+  opts=$(tmux show 2>/dev/null) || exit 1
+
+  for opt in "$@"; do
+    export $(grep -E $opt <<<$opts | sed "s/@//;s/ /=/")
+  done
+}
+
+export -f tmux-exp-opt
