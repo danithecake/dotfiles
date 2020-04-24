@@ -18,7 +18,7 @@ function prompt-jobs-count {
 }
 
 function prompt {
-  PS1=$(printf "\e[1m%s\e[0m\n: " "[dir:\w]$(prompt-git-bname)$(prompt-jobs-count)")
+  PS1=$(printf "\e[1m%s\e[0m\n: " ": \w \e[45;97m$(prompt-jobs-count)\e[0m")
 }
 
 export PROMPT_COMMAND=prompt
