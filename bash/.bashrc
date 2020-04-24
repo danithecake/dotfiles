@@ -63,3 +63,16 @@ function randstr {
 function term-title {
   echo -en "\033]0;${*}\a"
 }
+
+function tmux-new {
+  test -r "$1" && sesfile="$1"
+  test ! -r "$sesfile" && sesfile="${XDG_CONFIG_HOME}/tmux/${1}.tmux.conf"
+  test ! -r "$sesfile" && sesfile="${HOME}/.config/tmux/${1}.tmux.conf"
+  test ! -r "$sesfile" && sesfile="$(cat <&0)"
+  test ! -r "$sesfile" && return 1
+
+  tmux -C <$sesfile >/dev/null
+  test -z $TMUX && tmux attach || tmux switch-client -n
+
+  unset sesfile
+}
