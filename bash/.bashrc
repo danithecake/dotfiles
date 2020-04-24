@@ -6,7 +6,7 @@
 [[ $- != *i* ]] && return
 
 function prompt-git-bname {
-  git bname 2>/dev/null | (read b && echo " [git:${b::20}$(test ${#b} -gt 20 && echo ...)]")
+  git bname 2>/dev/null | sed "s/.\{20\}$/.../;s/\(.*\)/\1/"
 }
 
 function prompt-jobs-count {
