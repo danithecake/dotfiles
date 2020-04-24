@@ -60,22 +60,6 @@ function randstr {
     head -n 1
 }
 
-function nvim {
-  if command -v pvi >/dev/null; then
-    EDITOR=nvim pvi "$@"
-  else
-    command nvim "$@"
-  fi
-}
-
-function vim {
-  if command -v pvi >/dev/null; then
-    EDITOR=vim pvi "$@"
-  else
-    command vim "$@"
-  fi
-}
-
 function term-title {
   echo -en "\033]0;${*}\a"
 }
