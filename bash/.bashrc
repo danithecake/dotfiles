@@ -9,6 +9,10 @@ function prompt-git-bname {
   git bname 2>/dev/null | sed "s/.\{20\}$/.../;s/\(.*\)/\1/"
 }
 
+function prompt-git-chcount {
+  git lsc 2>/dev/null | wc -l | tr -d ' '
+}
+
 function prompt-jobs-count {
   jobs | wc -l | bc | (read j && test "$j" -gt 0 && echo " ${j} ")
 }
