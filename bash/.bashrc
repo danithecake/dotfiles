@@ -10,7 +10,7 @@ function prompt-git-bname {
 }
 
 function prompt-jobs-count {
-  jobs | wc -l | bc | (read j && test "$j" -gt 0 && echo -n " " && printf "[bg:%${j}s]" | tr " " "•")
+  jobs | wc -l | bc | (read j && test "$j" -gt 0 && echo " ${j} ")
 }
 
 function prompt {
