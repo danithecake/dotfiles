@@ -100,3 +100,11 @@ function tmux-exp-opt {
 }
 
 export -f tmux-exp-opt
+
+function fzy-gl {
+  git log 2>/dev/null | fzy | awk '{ print $1 }'
+}
+
+function fzy-ps {
+  ps aux | fzy | awk '{ print $2 }'
+}
