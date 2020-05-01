@@ -1,1 +1,6 @@
 set bell-style visible
+
+# Git shortcuts
+"\C-ggs": 'git status -sb 2>/dev/null; history -d -1\C-m'
+"\C-ggl": 'git log 2>/dev/null; history -d -1\C-m'
+"\C-ggd": 'git diff . 2>/dev/null; history -d -1\C-m'
