@@ -2,5 +2,5 @@
 *.swp
 *.swo
 # Local directory configs
-.local/
+/.local/
 .exrc
