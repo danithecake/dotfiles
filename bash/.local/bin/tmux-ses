@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "--init" ]; then
+  cat <<TEMPEND
+#!/usr/bin/env bash
+
+export SESNAME=session-name
+export SESROOT=.
+export SESLOCL=\${SESROOT}/.local
+export SESCONF=\${SESLOCL}/config
+export SESDATA=\${SESLOCL}/share
+export PATH=\${PATH}:\${SESLOCL}/bin
+
+if tmux -L \$SESNAME ls 2>/dev/null | grep \$SESNAME; then
+  tmux -L \$SESNAME \$(test -n "\$TMUX" && echo "switch-client" || echo "attach") -t \$SESNAME
+  exit
+fi
+
+tmux -L \$SESNAME -C new -s \$SESNAME -c \$SESROOT >/dev/null <<CMDEND
+  attach-session
+  # tmux commands
+CMDEND
+
+tmux -L \$SESNAME attach -t \$SESNAME
+TEMPEND
+
+  exit
+fi
+
+test -r "$1" && sesfile="$1"
+test ! -r "$sesfile" && sesfile="${XDG_CONFIG_HOME}/tmux/${1}.sh"
+test ! -r "$sesfile" && sesfile="${HOME}/.config/tmux/${1}.sh"
+test ! -r "$sesfile" && sesfile="$(cat <&0)"
+test ! -r "$sesfile" && return 1
+
+bash "$sesfile"
