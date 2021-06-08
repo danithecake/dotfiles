@@ -17,11 +17,10 @@ function prompt-jobs-count {
   jobs | wc -l | bc | (read j && test "$j" -gt 0 && echo " ${j} ")
 }
 
-function prompt {
-  PS1=$(printf "\e[1m%s\e[0m\n: " ": \w \e[45;97m$(prompt-jobs-count)\e[0m")
-}
-
-export PROMPT_COMMAND=prompt
+# export PS1="\[\033[1;35m\]cmd:\[\033[0m\] "
+# export PS1="\[\033[34;44m\]:\[\033[35;45m\]:\[\033[31;41m\]:\[\033[0m\] "
+# export PS1="\[\033[34m\]|\[\033[35m\]|\[\033[31m\]|\[\033[0m\] "
+export PS1="; "
 
 #
 # Completion
