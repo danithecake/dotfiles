@@ -13,5 +13,8 @@ if [ -d $confdir ]; then
 fi
 unset confdir
 
-# If not running interactively, don't do anything
+# If not running interactively, don't do anything next
 [[ $- != *i* ]] && return
+
+# Refresh local bash history
+(history -c; history -r) >/dev/null
