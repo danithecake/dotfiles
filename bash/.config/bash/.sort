@@ -2,3 +2,4 @@ env.sh
 funcs.sh
 prompt.sh
 binds.sh
+completion.sh

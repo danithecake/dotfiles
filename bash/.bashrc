@@ -15,11 +15,3 @@ unset confdir
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
-
-#
-# Completion
-#
-[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
-[ -f /opt/local/etc/bash_completion ] && . /opt/local/etc/bash_completion
-[ -f ~/.config/bash-completion ] && . ~/.config/bash-completion
-
