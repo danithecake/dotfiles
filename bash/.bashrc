@@ -16,23 +16,6 @@ unset confdir
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-function prompt-git-bname {
-  git bname 2>/dev/null | sed "s/.\{20\}$/.../;s/\(.*\)/\1/"
-}
-
-function prompt-git-chcount {
-  git lsc 2>/dev/null | wc -l | tr -d ' '
-}
-
-function prompt-jobs-count {
-  jobs | wc -l | bc | (read j && test "$j" -gt 0 && echo " ${j} ")
-}
-
-# export PS1="\[\033[1;35m\]cmd:\[\033[0m\] "
-# export PS1="\[\033[34;44m\]:\[\033[35;45m\]:\[\033[31;41m\]:\[\033[0m\] "
-# export PS1="\[\033[34m\]|\[\033[35m\]|\[\033[31m\]|\[\033[0m\] "
-export PS1="; "
-
 #
 # Completion
 #
