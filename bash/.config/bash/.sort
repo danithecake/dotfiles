@@ -3,3 +3,4 @@ funcs.sh
 prompt.sh
 binds.sh
 completion.sh
+kitty.sh
