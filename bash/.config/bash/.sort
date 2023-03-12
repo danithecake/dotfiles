@@ -3,4 +3,5 @@ funcs.sh
 prompt.sh
 binds.sh
 completion.sh
+tmux.sh
 kitty.sh
