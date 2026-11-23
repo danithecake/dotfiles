@@ -10,18 +10,24 @@ if ( echo $EDITOR | CLICOLOR=1 grep -v vim > /dev/null ); then
   fi
 fi
 
-if [ -t 0 ]; then
-  command $EDITOR $@
-
-  exit
+if ( command -v mktemp > /dev/null ); then
+  tmpfile=$(mktemp -t pvi$$)
+else
+  tmpfile=${HOME}/pvi$$
 fi
 
-tmp=${HOME}/pvi$$
+if [ ! -t 0 ]; then
+  cat > $tmpfile
+fi
 
-cat > $tmp
+trap "rm ${tmpfile}" EXIT
 
-trap "rm ${tmp}" EXIT
+command $EDITOR \
+  -c "set noswapfile" \
+  -c "silent! set viminfofile=NONE" \
+  -c "silent! set shadafile=NONE" \
+  -c "nn <buffer> <CR> :.w! % <Bar> q!<CR>" \
+  -c "nn <buffer> <C-c> :cq<CR>" \
+  -- $tmpfile < /dev/tty > /dev/tty || exit
 
-command $EDITOR -c "set noswapfile" -- $tmp < /dev/tty > /dev/tty || exit
-
-cat $tmp
+cat $tmpfile
