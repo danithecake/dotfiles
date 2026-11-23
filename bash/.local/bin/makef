@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+declare -A files
+declare -A targets
+
+for arg in "$@"; do
+  if [ -f "$arg" ]; then
+    files[${#files[@]}]="$arg"
+  else
+    targets[${#targets[@]}]="$arg"
+  fi
+done
+
+make FILES="$(echo "${files[@]}")" ${targets[@]}
