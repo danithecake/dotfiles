@@ -20,6 +20,9 @@ if [[ -f .bashrc.local ]]; then
   done
 fi
 
+# Mark current terminal if it's VSCode built-in one
+[[ "$TERM_PROGRAM" == "vscode" ]] && export VSCODE_TERM=true
+
 # Env for pipebrwsr tool
 ostype="$(uname -s)"
 [[ "$ostype" == "Darwin" ]] && export PIPEBRWSR=open

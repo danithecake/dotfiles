@@ -88,6 +88,14 @@ histfile="$(txpv @histfile)"
 [[ -n $histfile ]] && export HISTFILE=$histfile
 unset histfile
 
+# Manually set 'default' colors for VSCode terminal
+if [[ -v VSCODE_TERM && ! -v VSCODE_TMUX_COLORS_OVERRIDE ]]; then
+  tmux set -s mode-style "fg=colour0,bg=colour15"
+  tmux set -s copy-mode-selection-style "fg=colour0,bg=colour15"
+  tmux set -s copy-mode-match-style "fg=colour0,bold,bg=colour15"
+  export VSCODE_TMUX_COLORS_OVERRIDE=true
+fi
+
 # Bindings
 #
 
