@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+_boldtxt="$(tput bold)"
+_normtxt="$(tput sgr0)"
+
+function _help() {
+  fold -s -w 80 <<EOF
+Render piped HTML in browser defined as ${_boldtxt}\$PIPEBRWSR${_normtxt}.
+
+HTML input is piped to $_boldtxt\$PIPEBRWSR_TEMPF${_normtxt}. If ${_boldtxt}\$PIPEBRWSR_TEMPF${_normtxt} doesn't exists ${_boldtxt}mktemp${_normtxt} will be used to create temporary file.
+EOF
+}
+
+if [ "$1" == "--help" ]; then
+  _help
+  exit 0
+fi
+
+if [ -t 0 ]; then
+  echo "No input from stdin"
+  exit 1
+fi
+
+tempfile="$PIPEBRWSR_TEMPF"
+
+if [ ! -r $tempfile ]; then
+  tempfile="$(mktemp).html"
+fi
+
+cat - >$tempfile
+
+bash -c "${PIPEBRWSR} ${tempfile}"

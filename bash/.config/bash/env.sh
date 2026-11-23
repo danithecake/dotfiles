@@ -20,6 +20,16 @@ if [[ -f .bashrc.local ]]; then
   done
 fi
 
+# Env for pipebrwsr tool
+ostype="$(uname -s)"
+[[ "$ostype" == "Darwin" ]] && export PIPEBRWSR=open
+if [[ ! -r "$PIPEBRWSR_TEMPF" ]]; then
+  PIPEBRWSR_TEMPF="$(mktemp -u).html"
+  touch $PIPEBRWSR_TEMPF
+  export PIPEBRWSR_TEMPF
+fi
+unset -v ostype
+
 # Load nvm
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
