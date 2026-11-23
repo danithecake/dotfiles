@@ -15,3 +15,4 @@ hbrew_bashcomp=/opt/homebrew/etc/bash_completion.d
 [ -f /usr/local/etc/profile.d/bash_completion.sh ] && . /usr/local/etc/profile.d/bash_completion.sh
 [ -f ~/.config/bash-completion ] && . ~/.config/bash-completion
 command -v runner > /dev/null && eval $(runner --completion=bash)
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"

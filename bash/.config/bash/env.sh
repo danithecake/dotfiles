@@ -7,7 +7,10 @@
 # Base config
 #
 
-# Source nvm if starts in directory with its config
-if [[ -f "$NVM_RC" ]] && [[ -s "$NVM_SRC" ]]; then
-  source "$NVM_SRC" && nvm use --silent $(< $NVM_RC)
+# Load nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Activates nvm if shell starts in directory with local nvm config
+if [[ -f "$NVM_RC" ]]; then
+  nvm use --silent $(< $NVM_RC)
 fi
