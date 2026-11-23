@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+mdtype="github"
+infile=""
+outfile=""
+
+while test $# -gt 0; do
+  arg="$1"
+
+  shift
+
+  if [ "$arg" == "-t" ]; then
+    mdtype="$1"
+    continue
+  fi
+
+  if [ "$arg" == "-i" ] && [ -f "$1" ]; then
+    infile="$1"
+    continue
+  fi
+
+  if [ "$arg" == "-o" ]; then
+    outfile="$1"
+    continue
+  fi
+done
+
+markedopts=""
+
+if [ $mdtype = "github" ]; then
+  markedopts="--gfm"
+fi
+
+
+cat >$outfile <<EOF
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.markdown-body {
+box-sizing: border-box;
+min-width: 200px;
+max-width: 980px;
+margin: 0 auto;
+padding: 45px;
+}
+@media (max-width: 767px) {
+.markdown-body {
+padding: 15px;
+}
+}
+</style>
+EOF
+
+
+if [ $mdtype == "github" ]; then
+cat <<EOF >>$outfile
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
+EOF
+fi
+
+cat <<EOF >>$outfile
+</head>
+<body>
+<article class="markdown-body">
+EOF
+
+marked $markedopts $infile >>$outfile
+
+cat <<EOF >>$outfile
+</article>
+</body>
+</html>
+EOF
