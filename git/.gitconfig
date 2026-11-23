@@ -1,19 +1,59 @@
 [user]
 	email = danithecake@gmail.com
 	name = Danil Golovachev
+[core]
+	editor = $EDITOR
+	ignorecase = false
+[gpg]
+        format = ssh
+[init]
+	defaultBranch = main
 [push]
 	default = current
-[core]
-	editor = nvim
 [diff]
 	tool = nvimdiff
 [merge]
 	tool = nvimdiff
 [difftool "nvimdiff"]
-	cmd = nvim -d $BASE $LOCAL
+	cmd = nvim -d $LOCAL $REMOTE
 [mergetool "nvimdiff"]
 	cmd = nvim -d $LOCAL $REMOTE $MERGED
+[rebase]
+	autosquash = true
+[log]
+	date = format:%d-%m-%y %R
+[format]
+	pretty = format:%C(bold)%h%Creset %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s
 [alias]
 	s = status
 	ss = status -s
 	cout = checkout
+	bname = rev-parse --abbrev-ref HEAD
+	remprune = remote prune origin
+	lsf = ls-files --exclude-standard
+	lsa = "!git status -s -uall 2>/dev/null"
+	lsc = "!git lsa | grep -vE '^ ?D' | cut -c 4-"
+	lsd = "!git lsa | grep -E '^ D' | cut -c 4-"
+	lsm = "!git lsa | grep -E '^ M' | cut -c 4-"
+	lsu = "!git lsa | grep -E '^\\?\\?' | cut -c 4-"
+	lsan = "!git lsa | grep -E '^ A' | cut -c 4-"
+	lss = "!git lsa | grep -E '^[MARD]' | awk '{print $NF}'"
+	lsbm = "!git lsa | grep -E '^UU' | awk '{print $NF}'"
+	lsbd = "!git lsa | grep -E '^(UD|DU)' | awk '{print $NF}'"
+	lsbu = "!git lsa | grep -E '^(AA|UA)' | awk '{print $NF}'"
+	lsba = "!git lsa | grep -E '^(UU|AA|UA|UD|DU)' | awk '{print $NF}'"
+	orphan-branches = "!bash -c '\
+		comm -23 \
+		<(git branch --format=\"%(refname:lstrip=2)\" | sort) \
+		<(git branch -r --format=\"%(refname:lstrip=3)\" | sort) \
+		2>/dev/null\
+		'"
+	rbi = rebase -i
+	rbs = rebase -i --autosquash
+	rbc = rebase --continue
+	rba = rebase --abort
+	cps = cherry-pick
+	cpc = cherry-pick --continue
+	cpa = cherry-pick --abort
+	fzpb = "!bash -ic \"git branch | fzf --no-color | awk '{print $NF}'\""
+	fzcb = "!git fzpb | xargs git checkout"
