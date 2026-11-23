@@ -47,3 +47,8 @@ fi
 function fd {
   command fd --color never $@
 }
+
+# Alias for runner to use file list from stdin
+function runppr {
+  runner --files="$(cat -)" $@
+}

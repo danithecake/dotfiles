@@ -9,6 +9,7 @@ Personal configs for:
  * [Git](https://git-scm.com/)
  * [Karabiner](https://karabiner-elements.pqrs.org/)
  * [fd](https://github.com/sharkdp/fd)
+ * [runner](https://github.com/stylemistake/runner)
  * [Gnome Shell](https://www.gnome.org/)
 
 Linking of configs files is managed by [Stow](https://www.gnu.org/software/stow/stow.html).
