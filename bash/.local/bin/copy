@@ -4,4 +4,6 @@ if command -v pbcopy >/dev/null 2>&1; then
   pbcopy
 elif command -v xsel >/dev/null 2>&1; then
   xsel -ibv
+elif [[ -f /proc/sys/fs/binfmt_misc/WSLInterop ]]; then
+  clip.exe
 fi

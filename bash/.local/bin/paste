@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if command -v pbpaste >/dev/null 2>&1; then
+  pbpaste
+elif command -v xsel >/dev/null 2>&1; then
+  xsel -ob
+elif [[ -f /proc/sys/fs/binfmt_misc/WSLInterop ]]; then
+  powershell.exe -noprofile -command "Get-Clipboard" | tr -d "\r"
+fi
