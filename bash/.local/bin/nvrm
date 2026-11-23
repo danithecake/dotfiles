@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+args=""
+listen=""
+server=""
+remote=""
+
+while test $# -gt 0; do
+  arg="$1"
+
+  shift
+
+  if [ "$arg" == "--listen" ]; then
+    listen="$1"
+    test -f "$listen" || listen="$(tmux show-options -qvw @nvimaddr)"
+    test -f "$listen" || listen="$NVIM_ADDR"
+    continue
+  fi
+
+  if [ "$arg" == "--server" ]; then
+    server="$1"
+    continue
+  fi
+
+  if [ "$arg" == "--remote" ]; then
+    remote="${arg} ${@:1}"
+    break
+  fi
+
+  args="${args} ${arg}"
+done
+
+function nvim-run {
+  command nvim ${args} ${listen} ${server} ${remote}
+}
+
+if [ -n "$remote" ]; then
+  test -z "$server" && server="$(tmux show-options -qvw @nvimaddr)"
+  test -z "$server" && server="$NVIM_ADDR"
+
+  server="--server ${server}"
+  listen=""
+
+  nvim-run; exit $?
+fi
+
+if [ ! -f "$listen" ]; then
+  function cleanup {
+    rm -rf $nvimaddr
+    tmux set-option -qUw @nvimaddr
+  }
+
+  trap cleanup EXIT
+
+  nvimaddr="$(mktemp)"
+
+  rm -rf $nvimaddr
+
+  if [ -n "$TMUX" ]; then
+    tmux set-option -w @nvimaddr "$nvimaddr"
+  else
+    $NVIM_ADDR="$nvimaddr"
+  fi
+
+  listen="--listen ${nvimaddr}"
+
+  nvim-run; exit $?
+else
+  listen="--listen ${listen}"
+fi
+
+nvim-run
