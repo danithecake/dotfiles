@@ -240,8 +240,3 @@ if filereadable(s:pathogen)
   let g:loaded_netrwPlugin = 1
 endif
 unlet s:pathogen
-
-"
-" Extras
-"
-exec 'source '.expand(g:config_dir_path.'/config.vim')

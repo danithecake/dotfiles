@@ -1,7 +1,7 @@
 -- local lspconfig = require('lspconfig')
 local augroup = vim.api.nvim_create_augroup('UserLspConfig', {})
 
-vim.lsp.set_log_level('debug')
+vim.lsp.log.set_level('debug')
 
 vim.lsp.config['efm'] = (
   (function()
@@ -48,36 +48,36 @@ vim.lsp.config['efm'] = (
           local filetypes = {}
 
           vim
-              .iter({
-                languages.javascript,
-                languages.typescipt,
-                languages.json,
-              })
-              :flatten()
-              :each(function(filetype)
-                filetypes[filetype] = {
-                  {
-                    formatCommand = 'prettierd ${INPUT} ${--range-start=charStart} ${--range-end=charEnd}',
-                    -- formatCommand = 'npx prettier --stdin-filepath "${INPUT}"',
-                    -- formatCommand = 'biome format --use-editorconfig=true --stdin-file-path=${INPUT}',
-                    formatStdin = true,
-                    formatCanRange = true,
-                    rootMarkers = {
-                      '.prettierrc',
-                      '.prettierrc.json',
-                      '.prettierrc.js',
-                      '.prettierrc.yml',
-                      '.prettierrc.yaml',
-                      '.prettierrc.json5',
-                      '.prettierrc.mjs',
-                      '.prettierrc.cjs',
-                      '.prettierrc.toml',
-                      'prettier.config.js',
-                      'prettier.config.mjs',
-                    },
+            .iter({
+              languages.javascript,
+              languages.typescipt,
+              languages.json,
+            })
+            :flatten()
+            :each(function(filetype)
+              filetypes[filetype] = {
+                {
+                  formatCommand = 'prettierd ${INPUT} ${--range-start=charStart} ${--range-end=charEnd}',
+                  -- formatCommand = 'npx prettier --stdin-filepath "${INPUT}"',
+                  -- formatCommand = 'biome format --use-editorconfig=true --stdin-file-path=${INPUT}',
+                  formatStdin = true,
+                  formatCanRange = true,
+                  rootMarkers = {
+                    '.prettierrc',
+                    '.prettierrc.json',
+                    '.prettierrc.js',
+                    '.prettierrc.yml',
+                    '.prettierrc.yaml',
+                    '.prettierrc.json5',
+                    '.prettierrc.mjs',
+                    '.prettierrc.cjs',
+                    '.prettierrc.toml',
+                    'prettier.config.js',
+                    'prettier.config.mjs',
                   },
-                }
-              end)
+                },
+              }
+            end)
 
           vim.iter({ languages.lua }):flatten():each(function(filetype)
             filetypes[filetype] = {
@@ -124,14 +124,14 @@ vim.lsp.config['efm'] = (
         end)(),
       },
       filetypes = vim
-          .iter(vim
-            .iter(pairs(languages))
-            :map(function(_, filetype)
-              return filetype
-            end)
-            :totable())
-          :flatten()
-          :totable(),
+        .iter(vim
+          .iter(pairs(languages))
+          :map(function(_, filetype)
+            return filetype
+          end)
+          :totable())
+        :flatten()
+        :totable(),
     }
   end)()
 )
