@@ -8,6 +8,7 @@ Personal configs for:
  * [Bash](https://www.gnu.org/software/bash/)
  * [Git](https://git-scm.com/)
  * [Karabiner](https://karabiner-elements.pqrs.org/)
+ * [vifm](https://github.com/vifm/vifm)
  * [fd](https://github.com/sharkdp/fd)
  * [runner](https://github.com/stylemistake/runner)
  * [Gnome Shell](https://www.gnome.org/)

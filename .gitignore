@@ -4,3 +4,8 @@
 # Local directory configs
 /.local/
 .exrc
+# vifm non-config files
+vifm/.config/vifm/*
+!vifm/.config/vifm/vifmrc
+!vifm/.config/vifm/colors/
+!vifm/.config/vifm/colors/**

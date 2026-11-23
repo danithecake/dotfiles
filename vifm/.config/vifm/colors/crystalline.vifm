@@ -1,0 +1,28 @@
+" vim: filetype=vifm :
+
+" Author: Danil G.
+" Based on reicheltd-light theme by Daniel R. (a.k.a. reicheltd)
+
+highlight clear
+
+highlight Win cterm=none ctermfg=default ctermbg=none
+highlight Directory cterm=bold ctermfg=default ctermbg=none
+highlight Link cterm=none ctermfg=4 ctermbg=default
+highlight BrokenLink cterm=none ctermfg=1 ctermbg=default
+highlight Socket cterm=bold ctermfg=magenta ctermbg=default
+highlight Device cterm=bold ctermfg=blue ctermbg=default
+highlight Fifo cterm=bold ctermfg=cyan ctermbg=default
+highlight Executable cterm=bold ctermfg=2 ctermbg=default
+highlight Selected cterm=reverse
+
+highlight CurrLine cterm=reverse
+" highlight OtherLine cterm=underline,bold
+highlight TopLine cterm=none ctermfg=default ctermbg=none
+highlight TopLineSel cterm=bold ctermfg=default ctermbg=none
+highlight Border cterm=none ctermfg=default ctermbg=none
+
+highlight StatusLine cterm=none ctermfg=default ctermbg=none
+highlight WildMenu cterm=none ctermfg=default ctermbg=10
+highlight CmdLine cterm=none ctermfg=default ctermbg=none
+
+highlight ErrorMsg cterm=none ctermfg=red ctermbg=default
