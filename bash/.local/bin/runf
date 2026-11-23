@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+declare -A files
+declare -A targets
+tasks="$(runner -l)"
+
+for arg in "$@"; do
+  if [ -e "$arg" ]; then
+    files[${#files[@]}]="$arg"
+  elif (grep "$arg" <<<$tasks 1>/dev/null); then
+    targets[${#targets[@]}]="$arg"
+  fi
+done
+
+runner --files="$(echo "${files[@]}")" ${targets[@]}
