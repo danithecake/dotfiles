@@ -8,5 +8,5 @@ if exists("current_compiler")
 endif
 let current_compiler = "eslint"
 
-setlocal errorformat+=%f:\ line\ %l\\,\ col\ %c\\,\ %t%.%#-\ %m,%-G\ %#%.%#
-let &l:makeprg = get(g:, 'eslint_makeprg', 'eslint --format compact %')
+set errorformat+=%f:\ line\ %l\\,\ col\ %c\\,\ %t%.%#-\ %m
+let &makeprg = get(g:, 'eslint_makeprg', 'eslint --format compact %')

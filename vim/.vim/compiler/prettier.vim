@@ -8,5 +8,10 @@ if exists("current_compiler")
 endif
 let current_compiler = "prettier"
 
-setlocal errorformat+=[%t%.%#]%f:\ %m\ (%l:%c),%-G\ %#,%-G[%.%#]\ %.%#
-let &l:makeprg = get(g:, 'prettier_makeprg', 'prettier --write %')
+set errorformat+=[%t%.%#]%f:\ %m\ (%l:%c)
+set errorformat+=%A[%t%.%#]\ %.%#\ in\ %f:
+set errorformat+=%C[%.%#]\ %m\ at\ %l:%c
+set errorformat+=%Z
+set errorformat+=%-G\ %#
+set errorformat+=%-G[%.%#]\ %.%#
+let &makeprg = get(g:, 'prettier_makeprg', 'prettier --no-color --write %')

@@ -8,8 +8,7 @@ if exists("current_compiler")
 endif
 let current_compiler = "shellcheck"
 
-setlocal makeprg=shellcheck\ -f\ gcc\ $*\ %:S
-setlocal errorformat+=
-  \%f:%l:%c:\ %trror:\ %m,
-  \%f:%l:%c:\ %tarning:\ %m,
-  \%I%f:%l:%c:\ note:\ %m
+CompilerSet errorformat+=%f:%l:%c:\ %trror:\ %m,
+CompilerSet errorformat+=%f:%l:%c:\ %tarning:\ %m,
+CompilerSet errorformat+=%I%f:%l:%c:\ note:\ %m
+CompilerSet makeprg=shellcheck\ -f\ gcc\ $*\ %:S
