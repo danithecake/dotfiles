@@ -38,6 +38,26 @@ function term-title {
   echo -en "\033]0;${*}\a"
 }
 
+# Sorted human-readable output from du
+function dus {
+  du -h -d 1 "${@:-.}" | sort -h
+}
+
+# Encrypt file
+function encr {
+  openssl enc -aes-256-cbc -salt -in "$1"
+}
+
+# Decrypt file
+function decr {
+  openssl enc -aes-256-cbc -d -in "$1"
+}
+
+# Replace full path to home directory with "~"
+function h2~ {
+  cat - | sed "s@${HOME}@~@"
+}
+
 # Change directory by using interactive program in $DIRPCKR
 function cdi {
   cd $($DIRPCKR) || exit 1
@@ -52,6 +72,26 @@ function randstr {
     head -n 1
 }
 
+# Remove special chars and color code from stdin
+function ansi2txt {
+  cat - | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g'
+}
+
+# Wrapper for xargs to use it with Bash functions
+function fxargs {
+  export -f "$1"
+  xargs bash -c '$@' _ $@
+  unset -f "$1"
+}
+
+# DNS flusher
+function dns-flush {
+  if [[ "$(uname)" =~ "Darwin" ]]; then
+    sudo dscacheutil -flushcache
+    sudo killall -HUP mDNSResponder
+  fi
+}
+
 # Aliases
 #
 
@@ -62,6 +102,10 @@ else
   alias ls="ls --color=auto"
   alias grep="grep --color=auto"
 fi
+alias toperf="top -stats pid,command,cpu,threads,idlew,power,time,mem"
+alias qgrep="ugrep -Q -R -q --exclude-from=<(cat .gitignore .git/info/exclude)"
+alias pcomm="ps -o comm= -p $$ | sed 's/^-//'"
+alias ppcomm="ps -o comm= -p $PPID | sed 's/^-//'"
 
 # Alias for fzf
 function fzf {
@@ -81,6 +125,21 @@ function fzf {
 # Alias for fd to disable colors
 function fd {
   command fd --color never $@
+}
+
+# Alias for tinypng with API key from env
+function tinypng {
+  command tinypng -k $TINYPNG_API_KEY $@
+}
+
+# Alias for swift-format to disable colors
+function swfrmt {
+  swift-format $@ --no-color-diagnostics
+}
+
+# Alias for vifm as pipe file picker
+function vifmp {
+  vifm --choose-files -
 }
 
 # Alias for runner to use file list from stdin
