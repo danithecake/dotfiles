@@ -4,4 +4,5 @@ prompt.sh
 binds.sh
 completion.sh
 tmux.sh
+txsm.sh
 kitty.sh
