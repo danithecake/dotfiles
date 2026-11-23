@@ -10,6 +10,20 @@
 # Utils
 #
 
+# History on/off switcher
+function hist-switch {
+  if [ -v HISTFILE_BUP ]; then
+   export HISTFILE=$HISTFILE_BUP
+   unset HISTFILE_BUP
+   history -r
+   echo "history enabled"
+  else
+   history -a
+   export HISTFILE_BUP=$HISTFILE HISTFILE=/dev/null
+   echo "history disabled"
+  fi
+}
+
 # Prepend specified schema path for wich entry in dconf dump
 function dconf-dump {
   if [ ${#1} -gt 1 ]; then
@@ -22,6 +36,12 @@ function dconf-dump {
 # Set terminal title
 function term-title {
   echo -en "\033]0;${*}\a"
+}
+
+# Change directory by using interactive program in $DIRPCKR
+function cdi {
+  cd $($DIRPCKR) || exit 1
+  pwd | h2~
 }
 
 # Generate random string from /dev/urandom
@@ -42,6 +62,21 @@ else
   alias ls="ls --color=auto"
   alias grep="grep --color=auto"
 fi
+
+# Alias for fzf
+function fzf {
+  command fzf \
+    --height=20 \
+    --layout=reverse \
+    --no-sort \
+    --no-color \
+    --cycle \
+    --keep-right \
+    --multi \
+    --bind 'ctrl-y:toggle,?:toggle-preview' \
+    --bind 'ctrl-a:select-all' \
+    $@
+}
 
 # Alias for fd to disable colors
 function fd {

@@ -70,12 +70,6 @@ function txhp {
   txsv -p -t"$paneid" -U window-style
 }
 
-# Change directory by using interactive program in a $DIRPCKR and set it as @cwd window option
-function cdi {
-  cd $($DIRPCKR) && txsd || exit 1
-  pwd | h2~
-}
-
 # If not running interactively, don't do anything next
 [[ $- != *i* ]] && return
 
