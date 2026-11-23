@@ -6,3 +6,4 @@ completion.sh
 tmux.sh
 txsm.sh
 kitty.sh
+wsl.sh
